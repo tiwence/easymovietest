@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
 
     private val REQUEST_VIDEO_CAPTURE = 1
 
+    private val REQUEST_VIDEO_RECORDED = 2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,7 +30,9 @@ class MainActivity : AppCompatActivity() {
         ffmpeg = FFmpeg.getInstance(this)
 
         buttonRecord.setOnClickListener { view ->
-            dispatchTakeVideoIntent()
+            //dispatchTakeVideoIntent()
+            val intent = Intent(this, RecordingActivity::class.java)
+            startActivityForResult(intent, REQUEST_VIDEO_RECORDED)
         }
 
         buttonWatch.setOnClickListener { view ->
@@ -40,21 +44,16 @@ class MainActivity : AppCompatActivity() {
 
         ffmpeg.loadBinary(object : LoadBinaryResponseHandler() {
 
-            override fun onStart() {
-                Log.d(MainActivity::class.java.name, "Load Ffmpeg started")
-            }
+            override fun onStart() { }
 
             override fun onFailure() {
-                Log.e(MainActivity::class.java.name, "Load Ffmpeg failed")
             }
 
             override fun onSuccess() {
                 Log.d(MainActivity::class.java.name, "Load Ffmpeg success")
             }
 
-            override fun onFinish() {
-                Log.d(MainActivity::class.java.name, "Load Ffmpeg finish")
-            }
+            override fun onFinish() { }
         })
 
         StorageUtils.getInstance(this).writeLocalFilesToExternalStorage(R.raw.r1, "r1.mp4")
@@ -62,26 +61,16 @@ class MainActivity : AppCompatActivity() {
         StorageUtils.getInstance(this).writeLocalFilesToExternalStorage(R.raw.r4, "r4.mp4")
     }
 
-    private fun dispatchTakeVideoIntent() {
-        val takeVideoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-        if (takeVideoIntent.resolveActivity(packageManager) != null) {
-            startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode === REQUEST_VIDEO_CAPTURE && resultCode === Activity.RESULT_OK) {
-            val videoUri = data!!.data
-            val outputPath = StorageUtils.getInstance(this).storeRecordedVideoUri(videoUri)
-            //After the video recording we truncate it according to the video length specification
-            truncateVideo(outputPath)
+        if (requestCode === REQUEST_VIDEO_RECORDED){
+            concatenateVideoFiles(StorageUtils.getInstance(this).getVideoDirectoryStorageAbsolutePath() + "/recorded.mp4")
         }
     }
 
     /**
      * Function used to truncate the recorded videos by the user
      */
-    private fun truncateVideo(recordedPath: String?) {
+    /*private fun truncateVideo(recordedPath: String?) {
         val truncatedFile: File = File( StorageUtils.getInstance(this).getVideoDirectoryStorageAbsolutePath()
                 + "/" + File(recordedPath).nameWithoutExtension + "_truncated.mp4")
         truncatedFile.delete()
@@ -118,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                 super.onFinish()
             }
         })
-    }
+    }*/
 
     /**
      * Function used to concatenate video files according to the specification
@@ -144,9 +133,11 @@ class MainActivity : AppCompatActivity() {
                 outputFile.absolutePath)
 
         ffmpeg.execute(cmd, object : ExecuteBinaryResponseHandler() {
-            
+
             override fun onStart() {
                 super.onStart()
+                buttonRecord.isEnabled = false
+                progressBar.visibility = View.VISIBLE
                 statusTextView.text = getText(R.string.concatenate)
             }
 

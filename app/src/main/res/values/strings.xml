@@ -7,4 +7,6 @@
     <string name="concatenate">Concatening...</string>
     <string name="finished">Finished !</string>
     <string name="watch_result">Watch !</string>
+    <string name="btnCapture">capture</string>
+    <string name="rec">rec</string>
 </resources>
