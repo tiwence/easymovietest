@@ -46,11 +46,10 @@ class MainActivity : AppCompatActivity() {
 
             override fun onStart() { }
 
-            override fun onFailure() {
-            }
+            override fun onFailure() { }
 
             override fun onSuccess() {
-                Log.d(MainActivity::class.java.name, "Load Ffmpeg success")
+                Log.d(MainActivity::class.java.name, "Load FFmpeg binary success")
             }
 
             override fun onFinish() { }
@@ -110,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     }*/
 
     /**
-     * Function used to concatenate video files according to the specification
+     * Function used to concatenate video files with the recorded according to the specification
      */
     private fun concatenateVideoFiles(recordedPath: String?) {
 
@@ -137,8 +136,8 @@ class MainActivity : AppCompatActivity() {
             override fun onStart() {
                 super.onStart()
                 buttonRecord.isEnabled = false
-                progressBar.visibility = View.VISIBLE
                 statusTextView.text = getText(R.string.concatenate)
+                progressBar.visibility = View.VISIBLE
             }
 
             override fun onProgress(message: String?) {

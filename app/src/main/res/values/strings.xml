@@ -4,7 +4,7 @@
     <string name="header_text">Record your video by clicking on the record button</string>
     <string name="encoding_status">Waiting for your videos...</string>
     <string name="truncate">Truncating video...</string>
-    <string name="concatenate">Concatening...</string>
+    <string name="concatenate">Concatenation...</string>
     <string name="finished">Finished !</string>
     <string name="watch_result">Watch !</string>
     <string name="btnCapture">capture</string>

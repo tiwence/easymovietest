@@ -1,16 +1,9 @@
 package tiwence.fr.easymovietest
 
 import android.Manifest
-import android.R.attr.button
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.media.MediaRecorder
-import java.io.File
-import android.widget.Button
-import android.widget.ToggleButton
-import android.R.attr.start
-import android.app.Activity
 import android.content.pm.PackageManager
 import android.hardware.Camera
 import android.view.*
@@ -27,17 +20,16 @@ class RecordingActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private var surfaceHolder: SurfaceHolder? = null
     private var surfaceView: SurfaceView? = null
     private var mRecorder: MediaRecorder? = null
-    private var recordButton: ToggleButton? = null
 
-    var recordedFile: File? = null
     private var mCamera: Camera? = null
     var cameraConfigured: Boolean = false
-    var inPreview: Boolean = false
 
+    /**
+     * Countdown used to stop video recording at 5.6 sec
+     */
     var timer:CountDownTimer = object : CountDownTimer(5600, 100) {
 
-        override fun onTick(millisUntilFinished: Long) {
-        }
+        override fun onTick(millisUntilFinished: Long) { }
 
         override fun onFinish() {
             stopRecording()
@@ -47,6 +39,8 @@ class RecordingActivity : AppCompatActivity(), SurfaceHolder.Callback {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media_recorder)
+
+        supportActionBar?.hide()
 
         val decorView = window.decorView
         val uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -59,26 +53,23 @@ class RecordingActivity : AppCompatActivity(), SurfaceHolder.Callback {
             }
         })
 
-        supportActionBar?.hide()
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(
-                    Manifest.permission.CAMERA
-            ),0)
+        //We need to ask permission for the Android Camera
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),0)
             return
         }
 
         mCamera = Camera.open()
+        //Used to display the camera preview
         surfaceView = findViewById(R.id.surfaceCamera)
-        surfaceHolder = surfaceView!!.holder
-        surfaceHolder!!.addCallback(this)
-        surfaceHolder!!.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
+        surfaceHolder = surfaceView?.holder
+        surfaceHolder?.addCallback(this)
+        surfaceHolder?.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
     }
 
     protected fun startRecording() {
         mRecorder = MediaRecorder()  // Works well
-        mCamera!!.unlock()
+        mCamera?.unlock()
 
         mRecorder?.setCamera(mCamera)
 
@@ -99,6 +90,7 @@ class RecordingActivity : AppCompatActivity(), SurfaceHolder.Callback {
     protected fun stopRecording() {
         releaseMediaRecorder()
         releaseCamera()
+
         finish()
     }
 
@@ -142,11 +134,9 @@ class RecordingActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
             if (!cameraConfigured) {
                 val parameters = mCamera?.getParameters()
-                val size = getBestPreviewSize(width, height,
-                        parameters!!)
-
+                val size = getBestPreviewSize(width, height, parameters!!)
                 if (size != null) {
-                    parameters?.setPreviewSize(size!!.width, size!!.height)
+                    parameters.setPreviewSize(size.width, size.height)
                     mCamera?.setParameters(parameters)
                     cameraConfigured = true
                 }
@@ -157,12 +147,10 @@ class RecordingActivity : AppCompatActivity(), SurfaceHolder.Callback {
     private fun startPreview() {
         if (cameraConfigured && mCamera != null) {
             mCamera?.startPreview()
-            inPreview = true
         }
     }
 
-    private fun getBestPreviewSize(width: Int, height: Int,
-                                   parameters: Camera.Parameters): Camera.Size? {
+    private fun getBestPreviewSize(width: Int, height: Int, parameters: Camera.Parameters): Camera.Size? {
         var result: Camera.Size? = null
 
         for (size in parameters.supportedPreviewSizes) {
