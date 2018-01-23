@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">EasyMovieTest</string>
+    <string name="record">Record</string>
+    <string name="header_text">Record your video by clicking on the record button</string>
+    <string name="encoding_status">Waiting for your videos...</string>
+    <string name="truncate">Truncating video...</string>
+    <string name="concatenate">Concatening...</string>
+    <string name="finished">Finished !</string>
+    <string name="watch_result">Watch !</string>
+</resources>
