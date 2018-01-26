@@ -91,7 +91,7 @@ class StorageUtils {
         return file
     }
 
-    fun getVideoDirectoryStorageAbsolutePath(): String {
-        return this.getVideoDirectoryStorageDir()!!.absolutePath
+    fun getVideoDirectoryStorageAbsolutePath(): String? {
+        return this.getVideoDirectoryStorageDir()?.absolutePath
     }
 }
